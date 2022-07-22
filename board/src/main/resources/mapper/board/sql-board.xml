@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD MAPPER 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="board.board.mapper.BoardMapper">
+	<select id="selectBoardList" resultType="board.board.dto.BoardDto">
+		<![CDATA[
+		 Select board_idx, title, hit_cnt
+		 , Date_Format(created_datetime, '%Y.%m.%d %H:%i:%s') As created_datetime
+		 From t_board 
+		 Where deleted_yn='N'
+		 Order by board_idx Desc
+		]]>
+	</select>
+	
+	<insert id="insertBoard" parameterType="board.board.dto.BoardDto">
+		<![CDATA[
+			Insert Into t_Board(
+				title, contents,  created_datetime, creator_id
+			) values (
+				#{title}, #{contents}, now(),'admin'
+			)
+		]]>
+	</insert>
+	
+	<update id="updateBoard"  parameterType="board.board.dto.BoardDto">
+		<![CDATA[						
+			Update t_Board set 
+				title = #{title}
+				, contents = #{contents}
+				, updated_datetime = now()
+				, updater_id = 'admin'
+			Where board_idx = #{boardIdx}
+		]]>
+	</update>
+	
+	<delete id="deleteBoard"  parameterType ="int">
+		<![CDATA[
+			Update t_Board set 
+				deleted_yn = 'y'
+				, updated_datetime = now()
+				, updater_id = 'admin'
+			Where board_idx = #{boardIdx}
+		]]>
+	</delete>
+	
+	<select id="selectBoardDetail"  parameterType = "int" resultType="board.board.dto.BoardDto">
+		<![CDATA[
+		 Select board_idx, title, hit_cnt
+		 , Date_Format(created_datetime, '%Y.%m.%d %H:%i:%s') As created_datetime
+		 , creator_id,contents
+		 From t_board 
+		 Where deleted_yn='N' And board_idx = #{boardIdx}
+		 Order by board_idx Desc
+		]]>
+	</select>
+	
+	<update id="updateHitCount" parameterType ="int">
+		<![CDATA[
+			Update t_Board Set hit_Cnt = hit_cnt + 1 Where board_idx = #{boardIdx}
+		]]>
+	</update>
+</mapper>
